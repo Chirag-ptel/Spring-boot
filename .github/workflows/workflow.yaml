@@ -25,26 +25,26 @@
 #    See the documentation for each action used below for the recommended IAM policies for this IAM user,
 #    and best practices on handling the access key credentials.
 
-on:
-  push:
-    branches: [ "main" ]
+# on:
+#   push:
+#     branches: [ "main" ]
 
-name: Deploy to Amazon ECS Fargate
+# name: Deploy to Amazon ECS Fargate
 
-env:
-  AWS_REGION: ap-south-1                                     # set this to your preferred AWS region, e.g. us-west-1
-  ECR_REPOSITORY: springboot-ghactions-repo                  # set this to your Amazon ECR repository name
-  ECS_SERVICE: sample-dev-ecs-service                        # set this to your Amazon ECS service name
-  ECS_CLUSTER: sample-dev-ecs-cluster                        # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: /infra/ecs-alb/task-definition.json   # set this to the path to your Amazon ECS task definition
-                                                             # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: sample-dev-task                            # set this to the name of the container in the
-                                                             # containerDefinitions section of your task definition
+# env:
+#   AWS_REGION: ap-south-1                                     # set this to your preferred AWS region, e.g. us-west-1
+#   ECR_REPOSITORY: springboot-ghactions-repo                  # set this to your Amazon ECR repository name
+#   ECS_SERVICE: sample-dev-ecs-service                        # set this to your Amazon ECS service name
+#   ECS_CLUSTER: sample-dev-ecs-cluster                        # set this to your Amazon ECS cluster name
+#   ECS_TASK_DEFINITION: /infra/ecs-alb/task-definition.json   # set this to the path to your Amazon ECS task definition
+#                                                              # file, e.g. .aws/task-definition.json
+#   CONTAINER_NAME: sample-dev-task                            # set this to the name of the container in the
+#                                                              # containerDefinitions section of your task definition
 
-permissions:
-  contents: read
+# permissions:
+#   contents: read
 
-jobs:
+# jobs:
   # build:
   #  name: build infra
   #  runs-on: ubuntu-latest
@@ -90,16 +90,16 @@ jobs:
   #     run:  |
   #       pwd
   #       cd infra/ecs-alb
-  #       terraform destroy -auto-approve -var-file="./dev/terraform.tfvars"
-  deploy:
-    # needs: build
-    name: Deploy
-    runs-on: ubuntu-latest
-    environment: production
+  # #       terraform destroy -auto-approve -var-file="./dev/terraform.tfvars"
+  # deploy:
+  #   # needs: build
+  #   name: Deploy
+  #   runs-on: ubuntu-latest
+  #   environment: production
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+  #   steps:
+  #   - name: Checkout
+  #     uses: actions/checkout@v3
 
     # - name: Configure AWS credentials
     #   uses: aws-actions/configure-aws-credentials@v1
@@ -108,28 +108,28 @@ jobs:
     #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     #     aws-region: ${{ env.AWS_REGION }}
 
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+    # - name: Configure AWS credentials
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #     aws-region: ${{ env.AWS_REGION }}
+    # - name: Login to Amazon ECR
+    #   id: login-ecr
+    #   uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build, tag, and push image to Amazon ECR
-      id: build-image
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        # Build a docker container and
-        # push it to ECR so that it can
-        # be deployed to ECS.
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+    # - name: Build, tag, and push image to Amazon ECR
+    #   id: build-image
+    #   env:
+    #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+    #     IMAGE_TAG: ${{ github.sha }}
+    #   run: |
+    #     # Build a docker container and
+    #     # push it to ECR so that it can
+    #     # be deployed to ECS.
+    #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+    #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+    #     echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
     # - name: Fill in the new image ID in the Amazon ECS task definition
     #   id: task-def
